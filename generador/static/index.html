@@ -8,51 +8,65 @@
 <body>
 
   <div class="topbar">
-    <div class="logo">⚽ ApuestasBigData</div>
+    <div class="logo">📊 ApuestasBigData</div>
+    <div class="search-box">🔍 Buscar partidos...</div>
     <div class="topbar-actions">
       <button class="btn-outline">Entrar</button>
       <button class="btn-solid">Registro</button>
     </div>
   </div>
 
-  <div class="tabsbar">
-    <div class="tab active" data-tab="mundial">Todo</div>
-    <div class="tab" data-tab="champions">Clasificación Champions League</div>
-    <div class="tab" data-tab="europa">Clasificación Europa League</div>
-  </div>
-
-  <div class="page-title">
-    <h1>⚽ Mundial · Fase de grupos</h1>
-  </div>
-
-  <table id="tabla-partidos">
-    <thead>
-      <tr>
-        <td>Partido</td>
-        <td class="odd">1</td>
-        <td class="odd">X</td>
-        <td class="odd">2</td>
-        <td class="masapuestas">Más Apuestas</td>
-      </tr>
-    </thead>
-    <tbody id="cuerpo-tabla">
-      <!-- Se llena con JS -->
-    </tbody>
-  </table>
-
-  <div id="betslip" class="betslip oculto">
-    <div class="betslip-header">
-      <span>Sencilla (1)</span>
-      <button id="cerrar-betslip">✕</button>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-title">DEPORTES</div>
+      <div class="sport-item active">⚽ Mundial <span class="count" id="count-mundial">8</span></div>
+      <div class="sport-item">🏀 Básquetbol <span class="count">0</span></div>
+      <div class="sport-item">⚾ Béisbol <span class="count">0</span></div>
+      <div class="sport-item">🎾 Tenis <span class="count">0</span></div>
+      <div class="sport-item">🎮 eSports <span class="count">0</span></div>
     </div>
-    <div class="betslip-body">
-      <div id="betslip-partido" class="betslip-partido"></div>
-      <div id="betslip-seleccion" class="betslip-seleccion"></div>
-      <label>Monto:</label>
-      <input type="number" id="betslip-monto" value="25" min="1" step="1">
+
+    <div class="main">
+      <div class="main-header">
+        <h1>Mundial</h1>
+        <div class="pill active">Partidos</div>
+      </div>
+
+      <div class="section-label">Fase de grupos</div>
+
+      <div id="lista-partidos" class="games-list"></div>
     </div>
-    <button id="btn-apostar" class="btn-apostar">Apostar</button>
-    <div id="betslip-mensaje" class="betslip-mensaje"></div>
+
+    <div class="panel">
+      <div id="panel-vacio" class="panel-vacio">
+        <div class="panel-vacio-icono">🎟️</div>
+        <div>Cupón vacío</div>
+        <div class="panel-vacio-sub">Selecciona una cuota para apostar</div>
+      </div>
+
+      <div id="panel-lleno" class="panel-lleno oculto">
+        <div class="panel-partido-nombre" id="panel-partido"></div>
+        <div class="panel-seleccion" id="panel-seleccion"></div>
+
+        <div class="panel-tabs">
+          <div class="panel-tab active">Apostar</div>
+        </div>
+
+        <label class="panel-label">Monto</label>
+        <input type="number" id="panel-monto" value="25" min="1" step="1">
+
+        <div class="quick-amounts">
+          <button data-add="1">+$1</button>
+          <button data-add="5">+$5</button>
+          <button data-add="10">+$10</button>
+          <button data-add="100">+$100</button>
+        </div>
+
+        <button id="btn-apostar" class="btn-apostar">Apostar</button>
+        <div id="panel-mensaje" class="panel-mensaje"></div>
+        <div class="panel-legal">Al apostar, aceptas los Términos de Uso.</div>
+      </div>
+    </div>
   </div>
 
   <script src="/static/script.js"></script>

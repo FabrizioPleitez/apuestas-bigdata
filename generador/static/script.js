@@ -1,64 +1,87 @@
 let partidos = [];
 let seleccionActual = null;
 
+const coloresAvatar = ["#3a9e5f", "#e0733f", "#3f7fe0", "#d6b23f", "#8a5fd6", "#3fb0ac", "#4a90c9", "#c9403f"];
+
 function formatearCuota(cuota) {
   return cuota > 0 ? `+${cuota}` : `${cuota}`;
 }
 
+function claseParaCuota(cuota) {
+  if (cuota === 0) return "draw";
+  return cuota < 0 ? "fav" : "dog";
+}
+
 async function cargarPartidos() {
   const [resPartidos, resConteos] = await Promise.all([
-    fetch("/partidos"),
-    fetch("/conteos")
+    fetch("/partidos", { cache: "no-store" }),
+    fetch("/conteos", { cache: "no-store" })
   ]);
   partidos = await resPartidos.json();
   const conteos = await resConteos.json();
 
-  const cuerpo = document.getElementById("cuerpo-tabla");
-  cuerpo.innerHTML = "";
+  document.getElementById("count-mundial").innerText = partidos.length;
 
-  partidos.forEach(p => {
+  const lista = document.getElementById("lista-partidos");
+  lista.innerHTML = "";
+
+  partidos.forEach((p, i) => {
     const cantidad = conteos[p.partido_id] || 0;
-    const fila = document.createElement("tr");
-   fila.innerHTML = `
-      <td><div>${p.local}</div><div style="color:#8a8f98;font-size:12px;">${p.visitante}</div></td>
-      <td class="odd"><div class="odd-box" data-partido="${p.partido_id}" data-lado="local">${formatearCuota(p.cuota_local)}</div></td>
-      <td class="odd"><div class="odd-box" data-partido="${p.partido_id}" data-lado="EMPATE">${formatearCuota(p.cuota_empate)}</div></td>
-      <td class="odd"><div class="odd-box" data-partido="${p.partido_id}" data-lado="visitante">${formatearCuota(p.cuota_visitante)}</div></td>
-      <td>${cantidad} Más Apuestas</td>
+    const colorLocal = coloresAvatar[i % coloresAvatar.length];
+    const colorVisitante = coloresAvatar[(i + 3) % coloresAvatar.length];
+
+    const fila = document.createElement("div");
+    fila.className = "game-row";
+    fila.innerHTML = `
+      <div class="game-teams">
+        <div class="team"><span class="avatar" style="background:${colorLocal}">${p.local[0]}</span>${p.local}</div>
+        <div class="team"><span class="avatar" style="background:${colorVisitante}">${p.visitante[0]}</span>${p.visitante}</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div class="odds-group">
+          <div class="odd-btn ${claseParaCuota(p.cuota_local)}" data-partido="${p.partido_id}" data-lado="local">${formatearCuota(p.cuota_local)}</div>
+          <div class="odd-btn draw" data-partido="${p.partido_id}" data-lado="EMPATE">${formatearCuota(p.cuota_empate)}</div>
+          <div class="odd-btn ${claseParaCuota(p.cuota_visitante)}" data-partido="${p.partido_id}" data-lado="visitante">${formatearCuota(p.cuota_visitante)}</div>
+        </div>
+        <div class="odd-count">${cantidad} apuestas</div>
+      </div>
     `;
-    cuerpo.appendChild(fila);
+    lista.appendChild(fila);
   });
 
-  document.querySelectorAll(".odd-box").forEach(box => {
+  document.querySelectorAll(".odd-btn").forEach(box => {
     box.addEventListener("click", () => seleccionarCuota(box));
   });
 }
 
 function seleccionarCuota(box) {
-  document.querySelectorAll(".odd-box").forEach(b => b.classList.remove("seleccionada"));
+  document.querySelectorAll(".odd-btn").forEach(b => b.classList.remove("seleccionada"));
   box.classList.add("seleccionada");
 
   const partidoId = box.dataset.partido;
   const lado = box.dataset.lado;
   const partido = partidos.find(p => p.partido_id === partidoId);
-
   const equipoTexto = lado === "EMPATE" ? "EMPATE" : (lado === "local" ? partido.local : partido.visitante);
 
   seleccionActual = { partido_id: partidoId, resultado_apostado: equipoTexto };
 
-  document.getElementById("betslip-partido").innerText = `${partido.local} vs ${partido.visitante}`;
-  document.getElementById("betslip-seleccion").innerText = equipoTexto;
-  document.getElementById("betslip-mensaje").innerText = "";
-  document.getElementById("betslip").classList.remove("oculto");
+  document.getElementById("panel-partido").innerText = `${partido.local} vs ${partido.visitante}`;
+  document.getElementById("panel-seleccion").innerText = equipoTexto;
+  document.getElementById("panel-mensaje").innerText = "";
+  document.getElementById("panel-vacio").classList.add("oculto");
+  document.getElementById("panel-lleno").classList.remove("oculto");
 }
 
-document.getElementById("cerrar-betslip").addEventListener("click", () => {
-  document.getElementById("betslip").classList.add("oculto");
+document.querySelectorAll(".quick-amounts button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById("panel-monto");
+    input.value = (parseFloat(input.value) || 0) + parseFloat(btn.dataset.add);
+  });
 });
 
 document.getElementById("btn-apostar").addEventListener("click", async () => {
   if (!seleccionActual) return;
-  const monto = parseFloat(document.getElementById("betslip-monto").value);
+  const monto = parseFloat(document.getElementById("panel-monto").value);
 
   const respuesta = await fetch("/apuesta", {
     method: "POST",
@@ -71,13 +94,13 @@ document.getElementById("btn-apostar").addEventListener("click", async () => {
   });
 
   if (respuesta.ok) {
-    document.getElementById("betslip-mensaje").innerText = "✓ Apuesta enviada a Kafka. Actualizando...";
+    document.getElementById("panel-mensaje").innerText = "✓ Enviada a Kafka. Actualizando...";
     setTimeout(() => {
       cargarPartidos();
-      document.getElementById("betslip-mensaje").innerText = "✓ Apuesta procesada";
-    }, 2500); // espera a que el consumidor haga el flush del buffer (2s + margen)
+      document.getElementById("panel-mensaje").innerText = "✓ Apuesta procesada";
+    }, 2500);
   } else {
-    document.getElementById("betslip-mensaje").innerText = "Error al enviar";
+    document.getElementById("panel-mensaje").innerText = "Error al enviar";
   }
 });
 
