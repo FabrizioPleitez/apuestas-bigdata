@@ -62,22 +62,39 @@ function seleccionarCuota(box) {
   const lado = box.dataset.lado;
   const partido = partidos.find(p => p.partido_id === partidoId);
   const equipoTexto = lado === "EMPATE" ? "EMPATE" : (lado === "local" ? partido.local : partido.visitante);
+  const cuota = lado === "EMPATE" ? partido.cuota_empate : (lado === "local" ? partido.cuota_local : partido.cuota_visitante);
 
-  seleccionActual = { partido_id: partidoId, resultado_apostado: equipoTexto };
+  seleccionActual = { partido_id: partidoId, resultado_apostado: equipoTexto, cuota: cuota };
 
   document.getElementById("panel-partido").innerText = `${partido.local} vs ${partido.visitante}`;
   document.getElementById("panel-seleccion").innerText = equipoTexto;
   document.getElementById("panel-mensaje").innerText = "";
   document.getElementById("panel-vacio").classList.add("oculto");
   document.getElementById("panel-lleno").classList.remove("oculto");
+  calcularPago();
+}
+
+function calcularPago() {
+  if (!seleccionActual) return;
+  const monto = parseFloat(document.getElementById("panel-monto").value) || 0;
+  const cuota = seleccionActual.cuota;
+
+  const ganancia = cuota > 0 ? monto * (cuota / 100) : monto * (100 / Math.abs(cuota));
+  const total = monto + ganancia;
+
+  document.getElementById("panel-ganancia").innerText = `$${ganancia.toFixed(2)}`;
+  document.getElementById("panel-pago-total").innerText = `$${total.toFixed(2)}`;
 }
 
 document.querySelectorAll(".quick-amounts button").forEach(btn => {
   btn.addEventListener("click", () => {
     const input = document.getElementById("panel-monto");
     input.value = (parseFloat(input.value) || 0) + parseFloat(btn.dataset.add);
+    calcularPago();
   });
 });
+
+document.getElementById("panel-monto").addEventListener("input", calcularPago);
 
 document.getElementById("btn-apostar").addEventListener("click", async () => {
   if (!seleccionActual) return;

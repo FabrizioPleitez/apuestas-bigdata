@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from modelos import Apuesta, ApuestaEntrada, LoteRequest
 from realismo import elegir_partido, elegir_resultado, generar_monto, generar_usuario_id, PARTIDOS, CUOTAS
 from productor_kafka import enviar_apuesta, enviar_lote
-from mongo_reader import obtener_conteos
+from mongo_reader import obtener_conteos, obtener_cuotas_dinamicas
 
 app = FastAPI(title="Apuestas Big Data - Generador")
 
@@ -13,6 +13,10 @@ def conteos_por_partido():
     """Cuántas apuestas ha recibido cada partido (para la página principal)."""
     return obtener_conteos()
 
+@app.get("/cuotas")
+def cuotas_dinamicas():
+    """Devuelve las cuotas dinámicas para cada partido."""
+    return obtener_cuotas_dinamicas()
 
 @app.get("/")
 def pagina_principal():
@@ -23,15 +27,28 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/partidos")
 def listar_partidos():
-    """Lista los partidos disponibles junto con sus cuotas."""
+    """Lista los partidos con sus cuotas. Si el partido ya tiene apuestas
+    reales, las cuotas se recalculan dinámicamente según el dinero apostado
+    (igual que una casa real ajusta cuotas por volumen/riesgo); si no,
+    se usan las cuotas iniciales estáticas de realismo.py."""
+    cuotas_dinamicas = obtener_cuotas_dinamicas()
     resultado = []
     for p in PARTIDOS:
-        cuotas = CUOTAS[p["partido_id"]]
+        estaticas = CUOTAS[p["partido_id"]]
+        dinamicas = cuotas_dinamicas.get(p["partido_id"])
+
+        if dinamicas:
+            cuota_local = dinamicas.get(p["local"], estaticas["local"])
+            cuota_visitante = dinamicas.get(p["visitante"], estaticas["visitante"])
+            cuota_empate = dinamicas.get("EMPATE", estaticas["EMPATE"])
+        else:
+            cuota_local, cuota_visitante, cuota_empate = estaticas["local"], estaticas["visitante"], estaticas["EMPATE"]
+
         resultado.append({
             **p,
-            "cuota_local": cuotas["local"],
-            "cuota_visitante": cuotas["visitante"],
-            "cuota_empate": cuotas["EMPATE"],
+            "cuota_local": cuota_local,
+            "cuota_visitante": cuota_visitante,
+            "cuota_empate": cuota_empate,
         })
     return resultado
 
