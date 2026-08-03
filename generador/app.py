@@ -1,15 +1,39 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from modelos import Apuesta, ApuestaEntrada, LoteRequest
-from realismo import elegir_partido, elegir_resultado, generar_monto, generar_usuario_id, PARTIDOS
+from realismo import elegir_partido, elegir_resultado, generar_monto, generar_usuario_id, PARTIDOS, CUOTAS
 from productor_kafka import enviar_apuesta, enviar_lote
+from mongo_reader import obtener_conteos
 
 app = FastAPI(title="Apuestas Big Data - Generador")
 
+@app.get("/conteos")
+def conteos_por_partido():
+    """Cuántas apuestas ha recibido cada partido (para la página principal)."""
+    return obtener_conteos()
+
+
+@app.get("/")
+def pagina_principal():
+    return FileResponse("static/index.html")
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/partidos")
 def listar_partidos():
-    """Lista los partidos disponibles (útil para pruebas con Postman)."""
-    return PARTIDOS
+    """Lista los partidos disponibles junto con sus cuotas."""
+    resultado = []
+    for p in PARTIDOS:
+        cuotas = CUOTAS[p["partido_id"]]
+        resultado.append({
+            **p,
+            "cuota_local": cuotas["local"],
+            "cuota_visitante": cuotas["visitante"],
+            "cuota_empate": cuotas["EMPATE"],
+        })
+    return resultado
 
 
 @app.post("/apuesta")

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Apuestas Big Data</title>
+<link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo">⚽ ApuestasBigData</div>
+    <div class="topbar-actions">
+      <button class="btn-outline">Entrar</button>
+      <button class="btn-solid">Registro</button>
+    </div>
+  </div>
+
+  <div class="tabsbar">
+    <div class="tab active" data-tab="mundial">Todo</div>
+    <div class="tab" data-tab="champions">Clasificación Champions League</div>
+    <div class="tab" data-tab="europa">Clasificación Europa League</div>
+  </div>
+
+  <div class="page-title">
+    <h1>⚽ Mundial · Fase de grupos</h1>
+  </div>
+
+  <table id="tabla-partidos">
+    <thead>
+      <tr>
+        <td>Partido</td>
+        <td class="odd">1</td>
+        <td class="odd">X</td>
+        <td class="odd">2</td>
+        <td class="masapuestas">Más Apuestas</td>
+      </tr>
+    </thead>
+    <tbody id="cuerpo-tabla">
+      <!-- Se llena con JS -->
+    </tbody>
+  </table>
+
+  <div id="betslip" class="betslip oculto">
+    <div class="betslip-header">
+      <span>Sencilla (1)</span>
+      <button id="cerrar-betslip">✕</button>
+    </div>
+    <div class="betslip-body">
+      <div id="betslip-partido" class="betslip-partido"></div>
+      <div id="betslip-seleccion" class="betslip-seleccion"></div>
+      <label>Monto:</label>
+      <input type="number" id="betslip-monto" value="25" min="1" step="1">
+    </div>
+    <button id="btn-apostar" class="btn-apostar">Apostar</button>
+    <div id="betslip-mensaje" class="betslip-mensaje"></div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

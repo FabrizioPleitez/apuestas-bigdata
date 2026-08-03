@@ -18,6 +18,7 @@ def construir_update(apuesta: dict) -> UpdateOne:
             "$inc": {
                 f"totales_por_resultado.{resultado}": monto,
                 "total_apostado": monto,
+                "cantidad_apuestas": 1,
             }
         },
         upsert=True  # si el partido no existe todavía, lo crea

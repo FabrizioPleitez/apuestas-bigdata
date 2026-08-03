@@ -1,0 +1,40 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body { background: #f5f4f1; color: #1a1a1a; }
+
+.topbar { background: #0d0f13; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+.logo { color: #fff; font-weight: 700; font-size: 17px; }
+.topbar-actions { display: flex; gap: 8px; }
+.btn-outline { background: transparent; border: 1px solid #555; color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 12px; }
+.btn-solid { background: #e0733f; border: none; color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+.tabsbar { background: #161a20; padding: 10px 24px; display: flex; gap: 20px; overflow-x: auto; }
+.tab { color: #9aa0a8; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; padding-bottom: 4px; }
+.tab.active { color: #fff; border-bottom: 2px solid #e0733f; }
+
+.page-title { padding: 18px 24px 8px; }
+.page-title h1 { font-size: 18px; color: #16324f; }
+
+table { width: calc(100% - 48px); margin: 0 24px; border-collapse: separate; border-spacing: 0 8px; }
+thead td { font-size: 11px; color: #8a8f98; font-weight: 700; padding: 0 10px 4px; }
+.odd { text-align: center; width: 70px; }
+.masapuestas { text-align: right; width: 110px; }
+tbody tr { background: #fff; }
+tbody td { padding: 14px 10px; font-size: 13px; border-top: 1px solid #eceef1; border-bottom: 1px solid #eceef1; }
+tbody td:first-child { border-left: 1px solid #eceef1; border-radius: 8px 0 0 8px; }
+tbody td:last-child { border-right: 1px solid #eceef1; border-radius: 0 8px 8px 0; text-align: right; color: #8a8f98; font-size: 12px; }
+
+.odd-box { display: inline-block; min-width: 60px; padding: 8px 0; border-radius: 6px; border: 1px solid #e2e4e8; font-weight: 700; cursor: pointer; text-align: center; }
+.odd-box:hover { background: #fdeee6; border-color: #e0733f; }
+.odd-box.seleccionada { background: #e0733f; color: #fff; border-color: #e0733f; }
+
+.betslip { position: fixed; bottom: 20px; right: 20px; width: 300px; background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow: hidden; }
+.betslip.oculto { display: none; }
+.betslip-header { background: #16324f; color: #fff; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.betslip-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 14px; }
+.betslip-body { padding: 12px 14px; }
+.betslip-partido { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.betslip-seleccion { font-size: 12px; color: #e0733f; font-weight: 700; margin-bottom: 10px; }
+.betslip-body label { font-size: 12px; color: #666; display: block; margin-bottom: 4px; }
+.betslip-body input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px; }
+.btn-apostar { width: calc(100% - 28px); margin: 0 14px 14px; background: #e0733f; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+.betslip-mensaje { text-align: center; font-size: 12px; padding-bottom: 10px; color: #2e8b57; }
